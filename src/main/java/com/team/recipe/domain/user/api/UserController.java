@@ -8,6 +8,7 @@ import com.team.recipe.domain.user.dto.LoginRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
+@Tag(
+        name = "CRUD REST APIs for User Resource"
+)
 public class UserController {
 
     private UserService userService;
@@ -35,6 +39,7 @@ public class UserController {
     })
     @PostMapping({"/register", "/signup"})
     public ResponseEntity<User> register(@Valid @RequestBody AddUserRequest request) {
+
         User savedUser = userService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }

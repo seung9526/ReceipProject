@@ -1,5 +1,6 @@
 package com.team.recipe.domain.user.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -24,8 +25,10 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "users_id")
     private String userId;
 
     @NotBlank(message = "password must not be empty")
@@ -40,8 +43,9 @@ public class User {
     @Email(message = "User must have valid email address")
     @NaturalId
     @Size(max = 40)
-    @Column(name = "userEmail")
+    @Column(name = "user_email")
     private String userEmail;
+
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",
@@ -49,6 +53,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private Set<RecipePost> posts;
 
     @Transient
     private Collection<SimpleGrantedAuthority> authorities;

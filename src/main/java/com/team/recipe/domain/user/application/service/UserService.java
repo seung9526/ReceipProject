@@ -7,4 +7,6 @@ import com.team.recipe.domain.user.dto.LoginRequest;
 public interface UserService {
     User register(AddUserRequest request);
     String login(LoginRequest loginDto);
+
+    void deleteUser(long userID);
 }

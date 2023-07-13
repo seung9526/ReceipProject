@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
@@ -25,11 +26,14 @@ import org.springframework.security.web.header.writers.frameoptions.XFrameOption
 )
 public class SecurityConfig {
 
+    private final UserDetailsService userDetailsService;
+
     private final JwtAuthenticationFilter authenticationFilter;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-    public SecurityConfig(JwtAuthenticationEntryPoint authenticationEntryPoint,
+    public SecurityConfig(UserDetailsService userDetailsService, JwtAuthenticationEntryPoint authenticationEntryPoint,
                           JwtAuthenticationFilter authenticationFilter){
+        this.userDetailsService = userDetailsService;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.authenticationFilter = authenticationFilter;
     }
@@ -38,7 +42,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer configure() {
         return (web) -> web.ignoring()
                 .requestMatchers(PathRequest.toH2Console())
-                .requestMatchers("/v2/api-docs", "/swagger-resources/**",
+                .requestMatchers("/swagger-ui/**", "/swagger-resources/**",
                         "/swagger-ui.html","/swagger/**");
     }
 
@@ -48,7 +52,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .headers(headers -> headers.addHeaderWriter(new XFrameOptionsHeaderWriter(XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))	// H2 콘솔 사용을 위한 설정
                 .authorizeHttpRequests(requests ->
-                        requests.requestMatchers("/**", "/swagger-ui/**", "/v3/**").permitAll()	// requestMatchers의 인자로 전달된 url은 모두에게 허용
+                        requests.requestMatchers("/**", "/swagger-ui/**").permitAll()	// requestMatchers의 인자로 전달된 url은 모두에게 허용
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()	// H2 콘솔 접속은 모두에게 허용
                                 .anyRequest().authenticated()	// 그 외의 모든 요청은 인증 필요
                 ).exceptionHandling( exception -> exception

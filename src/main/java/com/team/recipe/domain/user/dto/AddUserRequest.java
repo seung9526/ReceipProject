@@ -3,6 +3,8 @@ package com.team.recipe.domain.user.dto;
 import com.team.recipe.domain.user.domain.entity.User;
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -13,6 +15,7 @@ public class AddUserRequest {
     private String password;
     private String userName;
     private String userEmail;
+    private Set<String> authorities;
 
     public User toEntity(){
         return User.builder()
@@ -21,5 +24,10 @@ public class AddUserRequest {
                 .userName(userName)
                 .userEmail(userEmail)
                 .build();
+    }
+
+    public static class Update{
+        private Long id;
+        private String email;
     }
 }

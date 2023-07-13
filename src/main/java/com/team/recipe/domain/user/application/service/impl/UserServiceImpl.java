@@ -3,17 +3,25 @@ package com.team.recipe.domain.user.application.service.impl;
 import com.team.recipe.domain.user.application.service.UserService;
 import com.team.recipe.domain.user.dao.repository.AuthorityRepository;
 import com.team.recipe.domain.user.dao.repository.UserRepository;
+import com.team.recipe.domain.user.domain.entity.Role;
 import com.team.recipe.domain.user.domain.entity.User;
 import com.team.recipe.domain.user.dto.AddUserRequest;
 import com.team.recipe.domain.user.dto.LoginRequest;
 import com.team.recipe.domain.user.exception.ReceipAPIExceiption;
+import com.team.recipe.domain.user.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +37,12 @@ public class UserServiceImpl implements UserService  {
 
     @Autowired
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private final AuthenticationManager authenticationManager;
+
+    @Autowired
+    private final JwtTokenProvider jwtTokenProvider;
 
     public User register(AddUserRequest request) {
 
@@ -49,13 +63,31 @@ public class UserServiceImpl implements UserService  {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
-        log.debug("Created Information for User: {}", user);
-        return userRepository.save(user);
+        Set<Role> roles = new HashSet<>();
+        Role userRole = authorityRepository.findByName("ROLE_USER");
+        roles.add(userRole);
+        user.setRoles(roles);
 
+        log.debug("Created Information for User: {}");
+
+        return userRepository.save(user);
     }
+
+
 
     @Override
     public String login(LoginRequest loginDto) {
-        return null;
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginDto.getUserNameOrEmail(), loginDto.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String token = jwtTokenProvider.generateToken(authentication);
+
+        return token;
+    }
+
+    @Override
+    public void deleteUser(long userID) {
+
     }
 }
