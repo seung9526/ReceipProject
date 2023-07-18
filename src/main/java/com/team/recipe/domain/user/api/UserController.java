@@ -5,6 +5,7 @@ import com.team.recipe.domain.user.domain.entity.User;
 import com.team.recipe.domain.user.dto.AddUserRequest;
 import com.team.recipe.domain.user.dto.JwtAuthResponse;
 import com.team.recipe.domain.user.dto.LoginRequest;
+import com.team.recipe.domain.user.exception.ApiException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -52,5 +53,17 @@ public class UserController {
         jwtAuthResponse.setAccessToken(token);
 
         return ResponseEntity.ok(jwtAuthResponse);
+    }
+
+    // TODO : userID를 기반으로 삭제
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String userId){
+        if(userId == null) {
+            throw new ApiException("Post id cannot null", HttpStatus.NOT_FOUND);
+        } else {
+            userService.deleteUser(userId);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

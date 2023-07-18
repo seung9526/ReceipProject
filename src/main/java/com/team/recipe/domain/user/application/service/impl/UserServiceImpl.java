@@ -9,6 +9,7 @@ import com.team.recipe.domain.user.dto.AddUserRequest;
 import com.team.recipe.domain.user.dto.LoginRequest;
 import com.team.recipe.domain.user.exception.ReceipAPIExceiption;
 import com.team.recipe.domain.user.security.JwtTokenProvider;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,6 @@ public class UserServiceImpl implements UserService  {
     }
 
 
-
     @Override
     public String login(LoginRequest loginDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -86,8 +86,10 @@ public class UserServiceImpl implements UserService  {
         return token;
     }
 
+    @Transactional
     @Override
-    public void deleteUser(long userID) {
+    public void deleteUser(String userID) {
+        userRepository.deleteByUserId(userID);
 
     }
 }

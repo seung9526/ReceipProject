@@ -5,6 +5,8 @@ import com.team.recipe.domain.user.dao.repository.RecipePostRepository;
 import com.team.recipe.domain.user.domain.entity.RecipePost;
 import com.team.recipe.domain.user.dto.RecipePostRequest;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,6 +46,11 @@ public class RecipePostServiceImpl implements RecipePostService {
     @Override
     public void deleteRecipePostById(long id) {
 
+    }
+
+    @Override
+    public Page<RecipePost> findAllByOrderByCreatedDateDescPageable(Pageable pageable) {
+        return recipePostRepository.findAllByOrderByCreatedDateDesc(pageable);
     }
 
     private RecipePostRequest mapToDTO(RecipePost post) {

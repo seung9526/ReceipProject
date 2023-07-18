@@ -21,4 +21,4 @@ Server Build      | Maven
 - 레시피 작성
 
 # API 명세
-- 노션으로 작성할듯
+- https://www.notion.so/dyamine/Recipe-Project-bafdb3e4853f4e039fa6ed4025c4653d?pvs=4

@@ -6,11 +6,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.Persister;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
@@ -21,6 +21,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Table(name = "users")
+@DynamicInsert
 public class User {
 
     @Id
@@ -30,6 +31,9 @@ public class User {
 
     @Column(name = "users_id")
     private String userId;
+
+    @ColumnDefault("'N'")
+    private String deleteUserYn;
 
     @NotBlank(message = "password must not be empty")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -62,11 +66,12 @@ public class User {
     private Collection<SimpleGrantedAuthority> authorities;
 
     @Builder
-    public User(String userId, String password, String userName, String userEmail){
+    public User(String userId, String password, String userName, String userEmail, String deleteUserYn){
         this.userId = userId;
         this.password = password;
         this.userName = userName;
         this.userEmail = userEmail;
+        this.deleteUserYn = deleteUserYn;
     }
 
 }
